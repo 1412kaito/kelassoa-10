@@ -1,6 +1,25 @@
 const { Sequelize } = require('sequelize');
 
-const seq = new Sequelize(process.env.DATABASE_URL);
+var seq;
+
+if (process.env.DATABASE_URL){
+    seq = new Sequelize(process.env.DATABASE_URL);
+    cek();
+}
+else {
+    seq = new Sequelize(process.env.DB_DATABASE,
+        process.env.DB_USER,
+        process.env.DB_PASSWORD, 
+        {
+            host : process.env.DB_HOST,
+            dialect : 'mysql',
+            pool: {
+            max: 3,
+            min: 1,
+            },
+    });
+    cek();
+}
 
 async function cek(){
     try {
@@ -10,7 +29,5 @@ async function cek(){
         console.error('Unable to connect to the database:', error);
     }
 }
-
-cek();
 
 module.exports = seq;
